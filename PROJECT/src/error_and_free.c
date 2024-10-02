@@ -90,7 +90,7 @@ int	syntax_error(char *str)
 	i = 0;
 	if (!(str[i] == '+' || str[i] == '-' || (str[i] >= '0' && str[i] <= '9')))
 		return (1);
-	if ((str[i] == '+' || str[i] == '-') && !(str[i++] >= '0' && str[i++] <= '9'))
+	if ((str[i] == '+' || str[i] == '-') && !(str[++i] >= '0' && str[i] <= '9'))
 		return (1);
 	while (str[++i])
 	{

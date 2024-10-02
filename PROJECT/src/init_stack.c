@@ -106,7 +106,7 @@ void	init_stack(node **a, char *argv[], bool free_argv)
 	int	i;
 	long	num;
 
-	i = 1;
+	i = 0;
 	while (argv[i])
 	{
 		if (syntax_error(argv[i]))

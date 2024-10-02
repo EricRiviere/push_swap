@@ -33,5 +33,14 @@ int	main(int argc, char *argv[])
 		else
 			sort_stack(&a, &b);
 	}
+	/*
+	node *current_node = a;
+	while (current_node)
+	{
+		ft_printf("%d\n", current_node->num);
+		current_node = current_node->next;
+	}
+	*/
 	free_stack(&a);
+	return (0);
 }
