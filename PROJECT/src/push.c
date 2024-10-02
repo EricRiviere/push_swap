@@ -53,20 +53,20 @@ static void	push(node **dest, node **src)
 	}
 	else
 	{
-		pushed_node->next = *dest_first;
+		pushed_node->next = dest_first;
 		pushed_node->next->prev = pushed_node;
 		*dest = pushed_node;
 	}
 }
 
-void	push_a(node **a, node **b, bool print)
+void	pa(node **a, node **b, bool print)
 {
 	push(a, b);
 	if (print)
 		ft_printf("pa\n");
 }
 
-void	push_b(node **b, node **a, bool print)
+void	pb(node **b, node **a, bool print)
 {
 	push(b, a);
 	if (print)

@@ -13,6 +13,45 @@
 #include "push_swap.h"
 
 /*EXPLAINATION:
+	-replicate_argv: To use original ft_split and replicate argv
+	We need this function to manage the case that we recive just 1 argument with
+	all numbers in it.
+	If we split the argument directly we'll lack of the argv[0] wich refers to the
+	program name.
+	This function splits argv[1] and allocates space for an extra space to then
+	copiy every string in the new array.
+	Doing so we end up with: argv[0] = 0, argv[1] = first number and so on.
+*/
+
+char	**replicate_argv(char const *s, char c)
+{
+	char	**arr;
+	char	**new_arr;
+	size_t	i;
+	size_t	word_count;
+
+	arr = ft_split(s, c);
+	if (!arr)
+		return (NULL);
+	word_count = 0;
+	while (arr[word_count])
+		word_count++;
+	new_arr = malloc(sizeof(char *) * (word_count + 2));
+	if (!new_arr)
+		return (NULL);
+	new_arr[0] = malloc(sizeof(char));
+	if (!new_arr[0])
+		return (NULL);
+	new_arr[0][0] = 0;
+	i = -1;
+	while (arr[++i])
+		new_arr[i + 1] = arr[i];
+	new_arr[i + 1] = NULL;
+	free(arr);
+	return (new_arr);
+}
+
+/*EXPLAINATION:
 	- ft_atol: To convert string from argv to long (we need to accept numbers
 		   longer than an int to then check if its over int limits)
 		- Create variables res (for the result number), sign (to set the 
@@ -62,7 +101,7 @@ long	ft_atol(char *str)
 		- Call to append_node to create a new_node with num value
 */
 
-void	init_stack(node **stack, char *argv[])
+void	init_stack(node **a, char *argv[], bool free_argv)
 {
 	int	i;
 	long	num;
@@ -70,12 +109,18 @@ void	init_stack(node **stack, char *argv[])
 	i = 1;
 	while (argv[i])
 	{
-		//Falta revisar errores antes de iniciar stack
-		//sintaxis, limites int, repeticion
+		if (syntax_error(argv[i]))
+			error_free(a, argv, free_argv);
 		num = ft_atol(argv[i]);
-		append_node(&stack, (int)num);
+		if (num > INT_MAX || num < INT_MIN)
+			error_free(a, argv, free_argv);
+		if (repetition_error(*a, (int)num))
+			error_free(a, argv, free_argv);
+		append_node(a, (int)num);
 		i++;
 	}
+	if (free_argv)
+		free_arr(argv);
 }
 
 

@@ -1,37 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   print_hexa.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Created: 2024/07/17 12:05:43 by eriviere          #+#    #+#             */
+/*   Updated: 2024/07/18 13:00:59 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "ft_printf.h"
 
-int	main(int argc, char *argv[])
+void	print_hexa(unsigned int nb, char type, int *counter)
 {
-	node	*a;
-	node	*b;
-	
-	a = NULL;
-	b = NULL;
-	if (argc == 1 || (argc == 2 && !argv[1][0]))
-		return (1);
-	else if (argc == 2)
-		argv = replicate_argv(argv[1], ' ');
-	init_stack(&a, argv + 1, argc == 2);
-	if (!is_sorted(a))
+	char	*base;
+
+	if (nb == 0)
 	{
-		if (stack_len(a) == 2)
-			sa(&a, true);
-		else if (stack_len(a) == 3)
-			sort_three(&a);
-		else
-			sort_stack(&a, &b);
+		print_char('0', counter);
+		return ;
 	}
-	free_stack(&a);
+	else
+	{
+		if (type == 'x')
+			base = "0123456789abcdef";
+		else
+			base = "0123456789ABCDEF";
+		if (nb >= 16)
+		{
+			print_hexa(nb / 16, type, counter);
+			print_hexa(nb % 16, type, counter);
+		}
+		else
+			print_char(base[nb], counter);
+	}
 }

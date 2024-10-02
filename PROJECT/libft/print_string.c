@@ -1,37 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   print_string.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Created: 2024/07/17 11:23:56 by eriviere          #+#    #+#             */
+/*   Updated: 2024/07/17 11:25:50 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "push_swap.h"
+#include "ft_printf.h"
 
-int	main(int argc, char *argv[])
+void	print_string(char *str, int *counter)
 {
-	node	*a;
-	node	*b;
-	
-	a = NULL;
-	b = NULL;
-	if (argc == 1 || (argc == 2 && !argv[1][0]))
-		return (1);
-	else if (argc == 2)
-		argv = replicate_argv(argv[1], ' ');
-	init_stack(&a, argv + 1, argc == 2);
-	if (!is_sorted(a))
+	size_t	i;
+
+	i = 0;
+	if (!str)
+		return (print_string("(null)", counter));
+	while (str[i])
 	{
-		if (stack_len(a) == 2)
-			sa(&a, true);
-		else if (stack_len(a) == 3)
-			sort_three(&a);
-		else
-			sort_stack(&a, &b);
+		print_char(str[i], counter);
+		i++;
 	}
-	free_stack(&a);
 }

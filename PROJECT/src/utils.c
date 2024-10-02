@@ -14,24 +14,21 @@
 
 /*EXPLAINATION:
 	-stack_len: To find stack length
-		- Create a node to iterate stack;
 		- Create len variable to count stack length
 		- If the stack is empty return 0 (0 length)
 		- Else iterate until finding stack end (NULL) and increase len
 		- Return len
 */
-int	stack_len(node **stack)
+int	stack_len(node *stack)
 {
-	node *current_node;
 	int	len;
 
-	len = 0;
-	current_node = *stack;
-	if (current_node == NULL)
+	if (stack == NULL)
 		return (0);
-	while (current_node != NULL)
+	len = 0;
+	while (stack != NULL)
 	{
-		current_node = current_node->next;
+		stack = stack->next;
 		len++;
 	}
 	return (len);
@@ -128,18 +125,16 @@ node	*find_smallest(node *stack)
 		- Return cheapest node
 */
 
-node	*find_cheapest(node **stack)
+node	*find_cheapest(node *stack)
 {
-	node	*current_node;
 
-	if (*stack == NULL)
+	if (stack == NULL)
 		return (NULL);
-	current_node = *stack;
-	while (current_node != NULL)
+	while (stack != NULL)
 	{
-		if (current_node->cheapest)
-			return (current_node);
-		current_node = current_node->next;
+		if (stack->cheapest)
+			return (stack);
+		stack = stack->next;
 	}
 	return (NULL);
 }

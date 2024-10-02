@@ -145,7 +145,7 @@ static void	set_cheapest(node *b)
 	current_b = b;
 	while (current_b)
 	{
-		if (current_b->cost < cheapest_node->cost)
+		if (current_b->push_cost < cheapest_node->push_cost)
 			cheapest_node = current_b;
 		current_b = current_b->next;
 	}
@@ -166,11 +166,11 @@ static void	set_cheapest(node *b)
 		- Reset the cheapest node in b
 */
 
-void	update_nodes(node **a, node **b)
+void	update_nodes(node *a, node *b)
 {
 	set_index(a);
 	set_index(b);
-	set_target_node(a, b);
+	set_target_nodes(a, b);
 	set_cost(a, b);
 	set_cheapest(b);
 }
