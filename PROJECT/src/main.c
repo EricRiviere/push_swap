@@ -20,7 +20,7 @@ int	main(int argc, char *argv[])
 	a = NULL;
 	b = NULL;
 	if (argc == 1 || (argc == 2 && !argv[1][0]))
-		return (1);
+		ft_putstr_fd("Error\n", 2);
 	else if (argc == 2)
 		argv = replicate_argv(argv[1], ' ');
 	init_stack(&a, argv + 1, argc == 2);
