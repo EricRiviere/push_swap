@@ -1,0 +1,217 @@
+This is an explaination of the workflow for Push_swap project from 42:
+https://github.com/fpetras/42-subjects/blob/master/push_swap.en.pdf
+
+To understand a bit of how the project works we need to take a look at the .h file and the structure created for this project:
+
+typedef struct s_node
+{
+	int				num;
+	int				index;
+	int				push_cost;
+	bool			above_median;
+	bool			cheapest;		
+	struct s_node	*next;
+	struct s_node	*prev;
+	struct s_node	*target_node;
+}	t_node;
+
+This structure is to create a node that will contain:
+	- num: A number to sort.
+	- index: Node index inside node stack
+	- push_cost: The cost (in movements) to move the node to stack top (for push)
+	- above_median: Register if the node is on top median or botom median inside the stack
+	- cheapest: Register if this is the cheapest node in the stack (according to push cost)
+	- next: conection to node next node
+	- prev: conection to node previous node
+	- target_node: Node target node from the other stack (to reduce movements by moving both stacks)
+
+Program workflow:
+
+- MAIN (main.c): int	main(int argc, char *argv[]);
+
+The main function is needed to initiate the program and it will:
+
+1 - Initiate 1 node for each stack (a, b) and point them to NULL (initially).
+2 - Check the number of arguments recieved on program execution:
+	- If the argc is 1 (no arguments, just program name) 
+					OR
+	  If the number of arguments is 2 and the second argument is empty (meaning we recieved just
+	  one empty argument)
+	  An error message is displayed in FD2(error standard output);
+
+3 - If the number of arguments is exactly 2, we're going to replace the argv recieved by a new argv
+	created by our function replicate_argv.
+
+- REPLICATE_ARGV (init_stack.c): char	**replicate_argv(char const *s, char c);
+
+The replicate argv function is needed for cases in wich we recieve just one argument and this argument is a string containing all numbers to sort (example: ./push_swap "23 -10 30 200 -1200")
+
+This function uses the split function of the libft (to generate diferent strings with one separator)
+The logic of this function is:
+
+	- We recieve the string and the separator (argv[1] and ' ').
+	- We create a new array of strings with its words (numbers in this case)
+	- We count the number of words (numbers) and we allocate memory for an extra space (WC + 2)
+	- We allocate memory for the new argv program name (new_arr[0]) and fill it with a NULL (0)
+	- We fill the new_arr with all arrays from split skiping the first element (program name)
+	- It returns a new argv with (argv[0] = 0, argv[1] = first number, etc).
+
+4 - Initialize stack a:
+
+To initialize stack a, we use the function init_stack (it recieves the stack a, argv + 1 and a flag
+that is setted to true only if  argc == 2 (this is to free the arrays created on argv replications))
+
+- INIT_STACK (init_stack.c): void	init_stack(t_node **a, char *argv[], bool free_argv);
+	
+This function will initialize stack a, and at the same time, check if there is any error on the arguments provided on program execution (according to project subject: the program must only manage non repeated int numbers), and also will free argv if replicated.
+
+	- Create an int to iterate through argv and a long to save each number to sort (i = 0)
+	- Iterate throug argv and check for:
+		- syntax error (not numbers) with syntax_error();
+		- int MAX & MIN limits (we use ft_atol to convert strings to long and then check limits)
+		- repetition errors with repetition_error();
+		* If no error on args recieved it appends the node to stack a with append_node();
+	- Finally if the flag we recieved is true (meaning we replicated argv) we free argv with
+	  free_arr();
+
+
+- SYNTAX_ERROR (error_and_free.c): int	syntax_error(char *str);
+
+This function recieves each string (number) and checks if it is actally a number by:
+
+	- Iterate through string and check:
+		- If first letter is either +/-/number (if not error is returned).
+
+			- This will pass: 2 / 3 / -4 / +5
+			- This will not: 2 / -3 / +4 / e (e is not +/-/number)
+
+		- If first letter is either +/- and second is a number (if not error is returned).
+
+			- This will pass: 2 / 3 / -4 / +5
+			- This will not: 2 / -3 / +4 / -e (-e contains - but the next char is not a number)
+
+		- Iterates through number & checks if avery char is a number:
+
+			- This will pass: -12424 / +1574 / 4573
+			- This will not:  -12424 / +1574 / 4573f3 (f is not a number)
+
+- FT_ATOL (init_stack.c): long	ft_atol(char *str);
+
+This function is just to be able to manage numbers bigger than an int, to then verify if they're inside INT LIMMITS.
+*I'll not explain this function because is an standard function and you can check the original function man (man atol). It converts a string into a long integer.
+
+The important part here is that inside init_stack() function, we create the num variable with ft_atol from each argv, and then check if num is > than INT_MAX or < than INT_MIN (if the number is not inside int limits we return an arror).
+
+- REPETITION_ERROR (error_and_free.c): int	repetition_error(t_node *a, int nbr);
+
+This function recieves the stack a (that since we're iterating through argv, checking for errors and if no error, appending a new node, it will beggin empty but each iteration will have a new node), and the number (casted to int, since we know now that it fits inside int limits).
+
+	- If a == NULL (will return no error) since stack is empty
+	- Iterate through stack a and if any node in stack a has its num property ecual to the number
+	  recieved, it returns error, if not, moves to next node.
+	- If no repeated number is found it returns no error (0);
+
+
+- APPEND_NODE (utils.c): void	append_node(t_node **stack, int num);
+
+This function recieves a stack and a number to create the new node.
+It appends a new node inside a stack by:
+
+	- Creating 2 pointers: one for the new node and one to the last node
+	- If the stack is empty it returns NULL (check for errors in functon use)
+	- Allocate space for a new node with structure size (protect the allocation)
+	- Since it appends (add at the end) the new_node next connection will point to NULL;
+	- The new_node num property will be fullfilled with the num recieved as argument
+	- If the stack is empty (*stack == NULL)
+		- The stack head will point to the new_node
+		- The new_node previous connection will point to NULL
+	- Else (stack is not empty)
+		- last_node pointer will ecual to last node (find_last() function)
+		- last_node next connection will point to new_node
+		- new_node previous connection will point to last_node
+
+- FIND_LAST (utils.c): t_node	*find_last(t_node *stack);
+
+This functions iterates through a stack while a node next connection is NULL (meaning its the last
+node) and it returns this last node.
+Detailed explaination inside utils.c.
+
+- ERROR_FREE (error_and_free.c): void	error_free(t_node **a, char *argv[], bool free_argv);
+
+This function is to manage errors inside init_stack function.
+It recieves a stack, argv and a flag (to free replicated argv if needed).
+
+	- Free stack by calling free_stack() function
+	- If free_argv flag recieved (meaning argc == 2, meaning we replicated argv) it frees argv
+	  array generated
+	- Writes "Error\n" to error standard output (FD2);
+	- Exits the program with (exit(1)).
+
+- FREE_STACK (error_and_free.c): void	free_stack(t_node	**stack);
+
+This function frees the stack if any error is found during stack initialization and also before program end.
+
+	- Create 2 pointers, one to itearate through array (current) and another one to save current
+	  node reference (since we're freeing nodes).
+	- If the stack is empty it returns nothing (nothing happens)
+	- Current pointer points to stack head (*stack)
+	- Iterate through stack while it has nodes
+		- In each node, we save the reference to next node inside tmp pointer
+		- Free current node
+		- move the current pointer (iteration pointer) to temp reference (next node)
+	- Point stack head to NULL
+
+- FREE_ARR (error_and_free.c): void	free_arr(char *argv[]);
+
+This function is to free the argv created in the case we just recieve 2 arguments.
+It recieves argv array.
+
+	- If argv or *argv is NULL (no string array or not array) it returns (nothing happens)
+	- While there is arguments in argv, it frees every argument.
+	- Finally we free the program name (argv -1 that equals argv[0] initializez as 0 in repl_argv())
+
+5 - Check if the stack is sorted:
+
+	- If the stack is sorted it'll free the stack created with free_stack() function and return (0).
+
+	- If the stack is not sorted we differenciate 3 cases:
+
+		- Case 1: We recieve just 2 numbers to sort
+		- Case 2: We recieve just 3 numbers to sort
+		- Case 3: We reviece more than 3 numbers to sort.
+	
+	*Case 1:
+	If we recieve just 2 numbers to sort and they're not sorted it means that we need to swap the
+	numbers.
+	We call sa() function.
+
+	*Case 2:
+	If we recieve just 3 numbers to sort, we'll call our base sorting function sort_three();
+
+	*Case 3:
+	If we recieve more than 3 numbers to sort we'll call our sort_stack() function.
+
+
+- STACK_LEN (utils.c): int	stack_len(t_node *stack);
+
+This function is a basic function to itarate through stack nodes and find its length.
+
+	- If the stack is empty it will return 0 (its length is 0).
+	- Initialize len at 0
+	- Iterate through stack until last node
+	- Move head to next node
+	- Increase len by one
+	- Return len
+
+- SORT_THREE (sort_base.c): void	sort_three(t_node **a);
+
+This function is to sort three numbers using nodes inside a list with the structure we created
+The logic of this sorting function is to finde the highes number node, place it at the end of the stack and check if first 2 numbers are already sorted (if not we swap).
+
+	- Create a pointer to the highest node
+	- If the stack is empty, we return nothing (nothing happens)
+	- If the highest number is at the top (*a) we rotate (put the first at the end)
+	- Else if the highest number is on the second position, we reverse rotate (put the last at 1st)
+	  This means that the highest number will be at the end
+	- Once we have the highest at the end, if the number on the head (*a) is bigger than the number
+	  on the next node of the head ((*a)->next), we swap the first 2 numbers to sort
