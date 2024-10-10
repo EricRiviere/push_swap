@@ -170,7 +170,7 @@ It recieves argv array.
 	- While there is arguments in argv, it frees every argument.
 	- Finally we free the program name (argv -1 that equals argv[0] initializez as 0 in repl_argv())
 
-5 - Check if the stack is sorted:
+5 - Check if the stack is sorted (check it with is_sorted() function):
 
 	- If the stack is sorted it'll free the stack created with free_stack() function and return (0).
 
@@ -190,6 +190,18 @@ It recieves argv array.
 
 	*Case 3:
 	If we recieve more than 3 numbers to sort we'll call our sort_stack() function.
+
+- IS_SORTED (sort_base.c):bool	is_sorted(t_node *stack);
+
+This function check if the stack that we just initialized is already sorted.
+If the stack is sorted returns true, if not, false.
+
+	- If the stack is empty we return (true) because there is nothing to sort
+	- Iterate through the stack (while we have a next connection) and check if the value
+	  of num in the current node is smaller than next node num value
+	- If one node num value is bigger than next node num value it means the stack is not sorted
+	  and we return false
+	- Else if we keep on iterating by moving stack head to next  node
 
 
 - STACK_LEN (utils.c): int	stack_len(t_node *stack);
@@ -215,3 +227,215 @@ The logic of this sorting function is to finde the highes number node, place it 
 	  This means that the highest number will be at the end
 	- Once we have the highest at the end, if the number on the head (*a) is bigger than the number
 	  on the next node of the head ((*a)->next), we swap the first 2 numbers to sort
+
+**CASE 3** 
+
+If we recieve more than 3 numbers to sort, we need to manage them with the less amount of movements possible.
+The logic of these case is to minimize the movements by using as much as doble movements as possible(is not the same to do a ra & rb (2 movements) than using rr (1 movement) but the output is the same, we'll rotate both stacks).
+
+Since from now on we need to perfectly understand the possible numbers, we'll beggin by reviewing
+each movement and continue with necessary functions to optimize movements.
+
+	**MOVEMENTS**
+
+- SWAP: This function change the 1rst and 2nd node position
+
+	- To optimize, the logic is to create a generic function swap and then create the swap_a (sa) 
+	for stack a, and swap_b (sb) for the stack b.
+
+	- SWAP (swap.c): static void	swap(t_node **head);
+
+	This function is created as static because it'll only be used in this file (swap.c).
+		- Since to be able to perform a swap we need to have at least 2 nodes, we need to
+		create a len variable to check if this is possible.
+		- In adition, we'll create 2 pointers, one to first node & one to second_node
+
+		- Len will be equal to stack_len() function.
+		- If *head == NULL (we have no first node) or len == 1 (we have just one node)
+		we can't perform a swap movement and we return.
+		- Since we now know that we have a head, we can point the first pointer to the head
+		- Also since we know that len is at least 2, we can point the 2nd pointer to 1st next
+
+		- Now that we have our pointers and knoe we can perform swap:
+			- We change the first next connection to second next connection
+			(now the next node of first will be what used to be the next node of second node)
+			-*This point is important to understand bidirectional linnked lists)*
+			- If second node next connection is not NULL (meaning we have more than 2 nodes)
+			  The previous conection of second next (the prev connection of the 3rd node) will
+			  be first (if we had just 2 nodes, we don't need to manage 3rd node prev connection)
+			- The following steps are just to reconect everything in its place:
+				- first node prev connection will be second
+				- second node next connection will be first
+				- second node prev connection will be NULL (since is now on top of the stack)
+				- mode the stack head to second (since is now on top of the stack)
+
+	- SA (swap.c): void	sa(t_node **a, bool print);
+
+	This function is to make a swap in stack a by:
+		- Calling swap() function passing the stack a
+		- If we recieve true as 2nd arg we'll print "sa\n" on std output (fd 1)
+	
+
+	- SB (swap.c): void	sa(t_node **b, bool print);
+
+	This function is to make a swap in stack b by:
+		- Calling swap() function passing the stack b
+		- If we recieve true as 2nd arg we'll print "sb\n" on std output (fd 1)
+	
+
+	- SS (swap.c): void	sa(t_node **a, t_node **b, bool print);
+
+	This function is to make a swap in stack in both stack a & b by:
+		- Calling swap() function passing the stack a
+		- Calling swap() function passing the stack b
+		- *Since we wanted to reuse both sa & sb in ss function, we need to have this bool to 
+		control the prints*
+		- If we recieve true as 2nd arg we'll print "ss\n" on std output (fd 1)
+
+- PUSH: This function pushes a node from one stack to another
+
+	- PUSH (push.c): static void	push(t_node **dest, t_node **src);
+
+	Since this function is also generic and we'll use it only in this file, the function is 
+	static and the arguments are generic (dest & src represent the destination stack - the 
+	stack that will recieve the new node - and the source stack - the stack that will provide
+	the node to push-)
+
+		- We'll create 3 pointers:
+			- pushed_node: pointer to the node to push
+			- src_first: pointer to src stack head
+			- dest_first: pointer to dest stack head
+
+		- If the src stack is empty (we cant push any node because there is no node) we will
+		  return nothing.
+		- If the src stack is not empty pushed_node pointer will point to src head
+
+		*Here we'll start to realocate node and plug/unplug node prev and next connections*
+		- The head of src stack (*src) will now point to src_first next connection
+			- Since it's posible that we had just one node in src:
+				- If the head of src (*src) is not NULL (meaning we had more than 1 node in src
+				  the src head prev connection will point to NULL
+				- (If we had just 1 node in src there's no need to connect next node prev con)
+			- Pushed node prev connection will now point to NULL (it is on top of dest stack)
+			- Since it's posible that we had no nodes in dest stack:
+				- If dest_first == NULL (meaning dest stack is empty)
+					- The head of dest stack (*dest) will now point to pushed node
+					- Pushed node next connection will now point to NULL (its the last node)
+				- Else if (meaning we already had nodes in dest stack)
+					- Pushed node next connection will now be dest_first (wha used to be dest head)
+					- Pushed node next node (dest 2nd node) prev connection will now be pushed node
+					- Move the dest stack head (*dst) to pushed node
+
+	- PA (push.c): void	pa(t_node **a, t_node **b, bool print);
+
+	I'll not explain a lot because its the same for all movements.
+	This function pushes 1rst a node to b.
+	Pa function calls push() function with a as dest and b as source
+
+
+	- PB (push.c): void	pa(t_node **b, t_node **a, bool print);
+
+	This function pushes 1rst b node to a.
+	Pa function calls push() function with b as dest and a as source
+
+- ROTATE: This function moves the first node to the end of the stack (2nd node is now head)
+
+	- ROTATE (rotate.c): static void	rotate(t_node **stack);
+
+	- Since its possible that we have no node or just one node in the stack, we'll create a variable
+	len to check the length of the stack
+	- We'll also create 2 pointers:
+		- first pointer that will point to stack head
+		- last pointer that will point to stack last node
+	
+	- If stack is empty (first == NULL) or len is equal to 1 (just one node) we return nothing
+	- last pointer will use find_last() function to find the last node.
+	- We move the stack head to first next connection (2nd node is now the head)
+	- First next node prev connection will now be NULL (since it is on stack head)
+	- First next connction will now be NULL (since first is now at the end of the stack)
+	- Last next connection will be now first (sinece last is now the penultimate node)
+	- First prev connection will now be last (since first is now at the end of the stack)
+
+	- RA (rotate.c): void	ra(t_node **a, bool print);
+
+	This function calls rotate() function with the stack a.
+
+	- RB (rotate.c): void	rb(t_node **b, bool print);
+
+	This function calls rotate() function with sthe stack b.
+
+	- RR (rotate.c): void	rr(t_node **a, t_node **b, bool print);
+
+	This function calls rotate() function with a & b stacks.
+
+- REVERSE ROTATE: This function moves the last node to the top of the stack
+
+	- REVERSE_ROTATE (reverse_rotate.c): static void	reverse_rotate(t_node **stack);
+
+	This function works exactly as rotate function but changing roles.
+	We'll need 2 pointers (first, last) and an int len (with the stack len)
+
+	- First pointer will point to stack head & len = stack length
+	- If first is NULL (stack is empty) or len is 1 (just 1 node) we can't perform movement
+	- Last pointer will point to stack last node
+	- Move the stack head to last (last is now 1rst)
+	- Last previous (penultimate) next connection is now NULL (is now at the end of stack)
+	- Last next conection is first (last is 1st and first is 2nd)
+	- First prev connection is last (first is now 2nd)
+	- Last previous connection is now NULL (is at the end of the stack)
+
+	- RRA (reverse_rotate.c): void	rra(t_node **a, bool print)
+
+	This function calls reverse_rotate on stack a.
+
+	- RRB (reverse_rotate.c): void	rrb(t_node **b, bool print)
+
+	This function calls reverse_rotate on stack b.
+
+	- RRR (reverse_rotate.c): void	rrr(t_node **a, t_node **b, bool print)
+
+	This function calls reverse_rotate on both a & b stacks.
+
+
+		**MOVEMENTS OPTIMIZATION**
+
+- SORT_STACK (push_swap.c): void	sort_stack(t_node **a, t_node **b)
+
+The logic of this function is to push numbers from stack a to stack b until you're left with 3 nodes
+in stack a.
+Once you have just 3 nodes on stack a, you apply the sort_three() function and then while you have
+nodes in stack b, minimize movements and push all nodes from b to a for stack a to be sorted.
+This explaination is a short version of what we'll se from now on.
+
+	- Sort_stack() functin recieves both stacks (at this point a will be initialized with nodes and
+	stack b will be initialized as NULL (we initialize b=NULL at main function).
+
+	- We'll need a len_a variable to know if we have 4 or more numbers to apply the logic explained
+	earlier. len_a will equal stack a length.
+
+	(The use of len_a-- > 3 is just to validate if len_a > 3 and decrement len_a for next if):
+	- If len_a-- is bigger than 3 (for example we have 4 nodes) we push a node from a to b.
+	- If after this push, len_a-- is still bigger than 3 (case o 5 nodes) we push another node to b
+	- While len_a-- > 3(for example 400 nodes) we'll push nodes from a to b (397 nodes in this case)
+	- Once we have just 3 nodes in stack a, we sort them with sort_three() function
+	*HERE COMES THE FUN PART*
+	- While we have nodes in stack b we'll apply 2 functions:
+		-update_nodes(*a, *b)
+		-push_b_to_a(a, b)
+	
+	- UPDATE_NODES (set_init.c): void	update_nodes(t_node *a, t_node *b);
+
+	This function will update all information setted on each node.
+
+		- It sets stack a node index and relative position by calling set_index() function
+		- It sets stack b node index and relative position by calling set_index() function
+		- It sets a target node from stack a on each node in stack b by calling set_target_nodes()
+		- It sets the cost (in movements) to push node b above its target node on stack a (set_cost)
+		- It sets the cheapest node property in each node in stack b (set_cheapest() function)
+
+	- SET_INDEX (set_init.c): set_index(t_node *stack);
+
+	This function sets an index value and its relative position to median for each node in a stack.
+	This 
+
+
