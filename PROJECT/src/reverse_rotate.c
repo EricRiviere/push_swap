@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   reverese_rotate.c                                  :+:      :+:    :+:   */
+/*   reverse_rotate.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:48:15 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,11 @@
 	-4: Set old first node's previous to last node
 */
 
-static void	reverse_rotate(node **stack)
+static void	reverse_rotate(t_node **stack)
 {
-	node	*first;
-	node	*last;
-	int	len;
+	t_node	*first;
+	t_node	*last;
+	int		len;
 
 	first = *stack;
 	len = stack_len(*stack);
@@ -40,26 +40,24 @@ static void	reverse_rotate(node **stack)
 	last->prev = NULL;
 }
 
-void	rra(node **a, bool print)
+void	rra(t_node **a, bool print)
 {
 	reverse_rotate(a);
 	if (print)
 		ft_printf("rra\n");
 }
 
-void	rrb(node **b, bool print)
+void	rrb(t_node **b, bool print)
 {
 	reverse_rotate(b);
 	if (print)
 		ft_printf("rrb\n");
 }
 
-void	rrr(node **a, node **b, bool print)
+void	rrr(t_node **a, t_node **b, bool print)
 {
 	reverse_rotate(a);
 	reverse_rotate(b);
 	if (print)
 		ft_printf("rrr\n");
 }
-
-

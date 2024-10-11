@@ -6,7 +6,7 @@
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:55:55 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,15 @@
 	-5:Second prev con. now points to NULL
 	-6:Move head to second
 */
-static void	swap(node **head)
+static void	swap(t_node **head)
 {
-	int	len;
-	node	*first;
-	node	*second;
+	int		len;
+	t_node	*first;
+	t_node	*second;
 
 	len = stack_len(*head);
 	if (*head == NULL || len == 1)
-		return;
+		return ;
 	first = *head;
 	second = first->next;
 	first->next = second->next;
@@ -46,21 +46,21 @@ static void	swap(node **head)
 	*head = second;
 }
 
-void	sa(node **a, bool print)
+void	sa(t_node **a, bool print)
 {
 	swap(a);
 	if (print)
 		ft_printf("sa\n");
 }
 
-void	sb(node **b, bool print)
+void	sb(t_node **b, bool print)
 {
 	swap(b);
 	if (print)
 		ft_printf("sb\n");
 }
 
-void	ss(node **a, node **b, bool print)
+void	ss(t_node **a, t_node **b, bool print)
 {
 	swap(a);
 	swap(b);

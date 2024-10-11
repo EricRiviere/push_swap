@@ -6,7 +6,7 @@
 #    By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/27 12:18:27 by eriviere          #+#    #+#              #
-#    Updated: 2024/09/30 12:53:43 by eriviere         ###   ########.fr        #
+#    Updated: 2024/10/10 15:32:31 by eriviere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 INCLUDE = src/push_swap.h \
 					libft/libft.h libft/ft_printf.h
 CC = cc 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address
 
 END = \033[m
 RED = \033[31m

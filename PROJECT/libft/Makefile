@@ -6,7 +6,7 @@
 #    By: eriviere <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/21 08:38:34 by eriviere          #+#    #+#              #
-#    Updated: 2024/09/03 15:56:39 by eriviere         ###   ########.fr        #
+#    Updated: 2024/10/10 15:33:34 by eriviere         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ $(HBONUS): $(BONUS_OBJS)
 	@touch $(HBONUS)
 
 %.o: %.c $(INCLUDE) Makefile
-	gcc $(CFLAGS) -c $< -o $@
+	cc $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(BONUS_OBJS)

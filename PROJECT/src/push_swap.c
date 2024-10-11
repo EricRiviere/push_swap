@@ -6,7 +6,7 @@
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:47:46 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,14 @@
 
 /*EXPLAINATION:
 	-move_both_cheapest: To bring both cheapest nodes to top saving movements
-		- Iterates through both stacks while at least one of their cheapest nodes is on top
-		rotating or reverse rotating both depending on the movement recived as arg
+		- Iterates through both stacks while at least one of their cheapest nodes
+		is on toprotating or reverse rotating both depending on the movement 
+		recived as arg
 		- Rsets both stacks index
 */
 
-static void	move_both_cheapest(node **a, node **b, node *cheapest_node, char above_median)
+static void	move_both_cheapest(t_node **a, t_node **b,
+							t_node *cheapest_node, char above_median)
 {
 	while (*a != cheapest_node->target_node && *b != cheapest_node)
 	{
@@ -38,7 +40,7 @@ static void	move_both_cheapest(node **a, node **b, node *cheapest_node, char abo
 		- If the cheapest is above median rotate otherwise reverse rotate
 */
 
-void	bring_to_top(node **stack, node *top_node, char stack_name)
+void	bring_to_top(t_node **stack, t_node *top_node, char stack_name)
 {
 	while (*stack != top_node)
 	{
@@ -64,21 +66,22 @@ void	bring_to_top(node **stack, node *top_node, char stack_name)
 		- Find the cheapest node
 		- If both cheapest node and its target node are above median rotate both
 		- Else (both CN and its TN below median) we reverse rotate both
-		- Since we don't know if both are on top or just one, call the function bring to
-		top that will bring CN or its TN to top if they're not in top yet
+		- Since we don't know if both are on top or just one, call the function 
+		bring totop that will bring CN or its TN to top if they're not in top yet
 		- With both CN & its TN on top we push CN (b) above its TN (a)
 */
 
-static void	push_b_to_a(node **a, node **b)
+static void	push_b_to_a(t_node **a, t_node **b)
 {
-	node *cheapest_node;
+	t_node	*cheapest_node;
 
 	cheapest_node = find_cheapest(*b);
 	if (!cheapest_node || !cheapest_node->target_node)
 		return ;
 	if (cheapest_node->above_median && cheapest_node->target_node->above_median)
 		move_both_cheapest(a, b, cheapest_node, 'T');
-	else if (!(cheapest_node->above_median) && !(cheapest_node->target_node->above_median))
+	else if (!(cheapest_node->above_median)
+		&& !(cheapest_node->target_node->above_median))
 		move_both_cheapest(a, b, cheapest_node, 'F');
 	bring_to_top(b, cheapest_node, 'b');
 	bring_to_top(a, cheapest_node->target_node, 'a');
@@ -92,9 +95,8 @@ static void	push_b_to_a(node **a, node **b)
 		- Else reverse rotate a
 */
 
-static void	smallest_on_top(node **a)
+static void	smallest_on_top(t_node **a)
 {
-
 	while ((*a)->num != find_smallest(*a)->num)
 	{
 		if (find_smallest(*a)->above_median)
@@ -118,7 +120,7 @@ static void	smallest_on_top(node **a)
 		that verify if the smallest node is on top and optimizes moves
 		to bring it to the top if necessary
 */
-void	sort_stack(node **a, node **b)
+void	sort_stack(t_node **a, t_node **b)
 {
 	int	len_a;
 
@@ -138,4 +140,3 @@ void	sort_stack(node **a, node **b)
 	set_index(*a);
 	smallest_on_top(a);
 }
-

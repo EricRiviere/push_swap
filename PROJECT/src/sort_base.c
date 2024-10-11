@@ -6,7 +6,7 @@
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:50:00 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 		- Iterates through all nodes on the stack and if it finds a number
 		not sorted returns false, otherwise returns true
 */
-bool	is_sorted(node *stack)
+bool	is_sorted(t_node *stack)
 {
 	if (stack == NULL)
 		return (1);
@@ -39,9 +39,9 @@ bool	is_sorted(node *stack)
 		is found
 */
 
-static node	*find_highest(node *stack)
+static t_node	*find_highest(t_node *stack)
 {
-	node	*highest_node;
+	t_node	*highest_node;
 
 	if (stack == NULL)
 		return (NULL);
@@ -64,9 +64,9 @@ static node	*find_highest(node *stack)
 		If 1rst > 2nd it swaps the first 2 nodes (otherwise stack already sorted)
 */
 
-void	sort_three(node **a)
+void	sort_three(t_node **a)
 {
-	node	*highest_node;
+	t_node	*highest_node;
 
 	if (*a == NULL)
 		return ;
@@ -78,7 +78,3 @@ void	sort_three(node **a)
 	if ((*a)->num > (*a)->next->num)
 		sa(a, true);
 }
-
-
-
-

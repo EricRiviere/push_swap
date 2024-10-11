@@ -6,7 +6,7 @@
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:55:32 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 		- Else iterate until finding stack end (NULL) and increase len
 		- Return len
 */
-int	stack_len(node *stack)
+int	stack_len(t_node *stack)
 {
 	int	len;
 
@@ -43,9 +43,9 @@ int	stack_len(node *stack)
 		- Return the last node
 */
 
-node	*find_last(node *stack)
+t_node	*find_last(t_node *stack)
 {
-	node	*last;
+	t_node	*last;
 
 	last = stack;
 	if (last == NULL)
@@ -56,7 +56,8 @@ node	*find_last(node *stack)
 }
 
 /*EXPLAINATION:
-	-append_node: To create and add a new node at the end of the stack with var num
+	-append_node: To create and add a new node at the end of the stack with
+	var num
 		- Create a pointer to the new node and last node
 		- If the stack is empty return
 		- Allocate memory for new node and protect the allocation
@@ -64,14 +65,14 @@ node	*find_last(node *stack)
 		- If the stack is empty, the head will be new node and prev NULL
 		- Else, set new_node as last_node next & last_node as new_node prev
 */
-void	append_node(node **stack, int num)
+void	append_node(t_node **stack, int num)
 {
-	node	*new_node;
-	node	*last_node;
+	t_node	*new_node;
+	t_node	*last_node;
 
 	if (stack == NULL)
 		return ;
-	new_node = malloc(sizeof(node));
+	new_node = malloc(sizeof(t_node));
 	if (new_node == NULL)
 		return ;
 	new_node->next = NULL;
@@ -98,10 +99,10 @@ void	append_node(node **stack, int num)
 		- Return smallest node
 */
 
-node	*find_smallest(node *stack)
+t_node	*find_smallest(t_node *stack)
 {
-	node	*smallest;
-	node	*current_node;
+	t_node	*smallest;
+	t_node	*current_node;
 
 	current_node = stack;
 	if (current_node == NULL)
@@ -125,9 +126,8 @@ node	*find_smallest(node *stack)
 		- Return cheapest node
 */
 
-node	*find_cheapest(node *stack)
+t_node	*find_cheapest(t_node *stack)
 {
-
 	if (stack == NULL)
 		return (NULL);
 	while (stack != NULL)
@@ -138,6 +138,3 @@ node	*find_cheapest(node *stack)
 	}
 	return (NULL);
 }
-
-
-

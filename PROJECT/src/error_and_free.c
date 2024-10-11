@@ -6,14 +6,15 @@
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:45:10 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
 /*EXPLAINATION:
-	-free_arr: To free argv created if we recieve only 1 argument with all numbers
+	-free_arr: To free argv created if we recieve only 
+	1 argument with all numbers
 		- Check if the arr is empty if so return
 		- Iterates through the array and free every string
 		- Free the array of strings
@@ -40,10 +41,10 @@ void	free_arr(char *argv[])
 		- Point the stack head pointer to NULL
 */
 
-void	free_stack(node	**stack)
+void	free_stack(t_node	**stack)
 {
-	node	*tmp;
-	node	*current;
+	t_node	*tmp;
+	t_node	*current;
 
 	if (stack == NULL)
 		return ;
@@ -65,7 +66,7 @@ void	free_stack(node	**stack)
 		- Exit program
 */
 
-void	error_free(node **a, char *argv[], bool free_argv)
+void	error_free(t_node **a, char *argv[], bool free_argv)
 {
 	free_stack(a);
 	if (free_argv)
@@ -107,7 +108,7 @@ int	syntax_error(char *str)
 		- If not returns NO ERROR
 */
 
-int	repetition_error(node *a, int nbr)
+int	repetition_error(t_node *a, int nbr)
 {
 	if (a == NULL)
 		return (0);
@@ -119,5 +120,3 @@ int	repetition_error(node *a, int nbr)
 	}
 	return (0);
 }
-
-

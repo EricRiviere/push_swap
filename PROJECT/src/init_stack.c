@@ -6,7 +6,7 @@
 /*   By: eriviere <eriviere@student.42barcelon      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 12:23:39 by eriviere          #+#    #+#             */
-/*   Updated: 2024/09/30 13:00:47 by eriviere         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:45:35 by eriviere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@
 	-replicate_argv: To use original ft_split and replicate argv
 	We need this function to manage the case that we recive just 1 argument with
 	all numbers in it.
-	If we split the argument directly we'll lack of the argv[0] wich refers to the
-	program name.
+	If we split the argument directly we'll lack of the argv[0]
+	wich refers to the program name.
 	This function splits argv[1] and allocates space for an extra space to then
 	copiy every string in the new array.
 	Doing so we end up with: argv[0] = 0, argv[1] = first number and so on.
@@ -70,8 +70,8 @@ char	**replicate_argv(char const *s, char c)
 long	ft_atol(char *str)
 {
 	long	res;
-	int	sign;
-	int	i;
+	int		sign;
+	int		i;
 
 	res = 0;
 	sign = 1;
@@ -101,9 +101,9 @@ long	ft_atol(char *str)
 		- Call to append_node to create a new_node with num value
 */
 
-void	init_stack(node **a, char *argv[], bool free_argv)
+void	init_stack(t_node **a, char *argv[], bool free_argv)
 {
-	int	i;
+	int		i;
 	long	num;
 
 	i = 0;
@@ -122,7 +122,3 @@ void	init_stack(node **a, char *argv[], bool free_argv)
 	if (free_argv)
 		free_arr(argv);
 }
-
-
-
-
