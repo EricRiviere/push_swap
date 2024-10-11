@@ -420,8 +420,10 @@ This explaination is a short version of what we'll se from now on.
 	- Once we have just 3 nodes in stack a, we sort them with sort_three() function
 	*HERE COMES THE FUN PART*
 	- While we have nodes in stack b we'll apply 2 functions:
-		-update_nodes(*a, *b)
-		-push_b_to_a(a, b)
+		-update_nodes(*a, *b) --> UPDATE NODE INFO PHASE
+		-push_b_to_a(a, b) --> BRING TO TOP AND PUSH (optimizing movements) PHASE
+
+	**UPDATE NODE INFO PHASE**
 	
 	- UPDATE_NODES (set_init.c): void	update_nodes(t_node *a, t_node *b);
 
@@ -436,6 +438,170 @@ This explaination is a short version of what we'll se from now on.
 	- SET_INDEX (set_init.c): set_index(t_node *stack);
 
 	This function sets an index value and its relative position to median for each node in a stack.
-	This 
+	
+		- We're going to need two ints, one for the median & one for the index.
+		- If the stack is empty we return nothing
+		- To know the median, we're dividing the stack length by two
+		- Iterate through the stack to set up the index property on each node
+		- If the index is smaller/equal to median we change above_median property to true
+		- Else (> median) we set the above_median property to false
+		- We advance to next node and increase the index
+		*The need of this will be understood on next function explainations, but to have a first
+		idea now: we need to know if a node is above or bellow median to decide if its better to
+		apply rotate (first go to bottom) or reverse rotate (last go to top). If its above, we'll
+		need less movements to bring it to the top -to push it to other stack- if we use rotate, 
+		otherwise, its better to user reverse rotate*
 
+	- SET_TARGET_NODES (set_init.c): static void	set_target_nodes(t_node *a, t_node *b);
+
+	This function stablishes a target node inside stack a, for every node in stack b.
+	The logic behind this is that we need to push every node in stack b just above the biggest
+	closest number in stack a (to end up with stack a sorted).
+
+		- Create 2 pointer, 1 to iterate stack (current_a), and another to stablish target node
+		property in every node in stack b.
+		- We also need an int value to have a reference of the optimal temporary target
+
+		- Iterate through stack b:
+			- In each itaration we set the target_node pointer to NULL (explaination on next lines)
+			- Set the temp target value to INT_MAX (since we need to find the biggest CLOSEST value)
+			- Set the current a pointer to head of stack a (to iterate through every node in a)
+			- Inside the while loop (through stack a):
+				- If the num property of the node in a is BIGGER than num prop in b stack
+								&&
+				  num prop of the node in a is SMALLER than temp target value
+				  - we set the temp target value to node in a num property
+				  				&&
+					target node pointer to node in a
+				- Else, we move to next node in a
+			- If the temp target value is still INT_MAX (meaning we didn't found any number bigger
+			  than node b num property, the node in b target node property will be the smallest one
+			  (we find it by calling the find_smallest() function).
+			- Else, node in b target node property will be target_node pointer.
+			*This is why in each iteration in stack b we set target_node to NULL, because if we
+			don't find a bigger-closer node we're not setting target_node*
+			-Finaly, we move to next node in b.
+	
+		- FIND_SMALLEST (utils.c): t_node	*find_smallest(t_node *stack);
+
+		This function is to find and return the node in a stack which has the smallest num
+		property.
+
+			- Create 2 pointers, 1 to iterate (current) 1 to the smallest node to return
+			- If the stack is empty we return NULL
+			- Smallest node pointer will temporary be set to current node.
+			- Iterate through the stack with current node pointer
+				- If the current node num property is smaller than smallest node num property
+					- We set smallest node to current node
+				- If not or after this, we move to the next node
+			- We return the smallest node pointer.
+
+	- SET_COST (set_init.c): static void	set_cost(t_node *a, t_node *b);
+
+	This function sets the push cost in every node in b by adding the cost of moving node in b
+	and its target node in a to the top of each stack.
+	If the node is above median, the cost equals index value, else, the length - its index value.
+
+		- Create to ints, one to set each stack length (call to stack_len() function)
+		- Iterate through stack b:
+			- Temporary set node b push cost property as node b index property
+			- If the node b is not above median (is on the lowest half of the stack)
+				- node b push cost prop equals lenght of stack b - node b index prop
+			- If node b target node is not above median (also on the lowest half)
+				- node b push cost prop is added (+=) length of stack a - node b TN index value
+			- Else (node b target node is above median (is on the highest half)
+				- node b push cost prop is added (+=) node b target node index value
+			- We move to next node in stack b
+	
+	- SET_CHEAPEST (set_init.c): static void	set_cheapest(t_node *b);
+
+	This function is to set cheapest node property in each node in stack b.
+
+		- Create 2 pointers, 1 to the cheapest node, 1 to iterate through stack (current_b)
+		- If the stack is empty we return nothing.
+		- Temporary set both current_b and cheapest node to stack b head (b)
+		- Iterate through stack b:
+			- If the node in b push cost is smaller than cheapest node push cost
+				Cheapest node equals node in b
+			- If not or else we move to the next node in b
+		-Reset current_b pointer to stack b head (b)
+		- Iterate through stack b:
+			- Set cheapest to false and move to next node
+		- Set the cheapest node cheapest property to true
+		*This function can be optimized*
+	
+
+	**BRING TO TOP AND PUSH (optimizing movements) PHASE**
+
+	- PUSH_B_TO_A (push_swap.c): static void	push_b_to_a(t_node **a, t_node **b);
+
+	This function is in charge of pushing a node from stack b into stack a with less movements
+	posible.
+
+	- Create a pointer to the cheapest node and control if everything is ok (exists and has TN)
+	- If both cheapest node and cheapest node target node are ABOVE MEDIAN
+		- Call to move_both_cheapest() function with flag 'T' (true meaning avobemed prop is true)
+	- Else if both are BELLOW MEDIAN 
+		- Call to move_both_cheapest() function with flag 'F' (avobe median prop is set to false)
+	- Call bring_to_top() function for stack b
+	- Call bring_to_top() function for stack a
+	- Call to pa() function to push the node
+
+	*This function will reduce movements to move both cheapest node in b and its target node to
+	the top of the stack to push by using doble stack movements. Once one is on the top we bring
+	the other to the top if needed and then push the node from b to a.
+
+		- MOVE_BOTH_CHEAPEST (push_swap.c): static void	move_both_cheapest(t_node **a, t_node **b,
+							t_node *cheapest_node, char above_median)
+
+		This function is to move both cheapest nodes to top minimizing movements.
+
+			- Iterate through both stacks while each stack head (*a & *b) are not equal to 
+			cheapest_node (in stack b) and cheapest_node target node (in stack a)
+				- If the frag recieved is 'T' (meaning both are above median)
+					- Call to rr() function (rotates from top)
+				- Else if flag recieved is 'F; (meaning both are bellow median)
+					- Call to rrr() function (rotates from bottom)
+			- At the end, we need to set the index on both stacks to be able to move one node
+			or the other to the top if is not already in the top.
+
+		- BRING_TO_TOP (push_swap.c): void	bring_to_top(t_node **stack, t_node *top_node, 
+												char stack_name);
+
+		This function checks if cheapest node or its target node are on top and make the moves if
+		needed.
+
+			- Iterate through the stack recieved while the head is not equal to the node that
+			we want to have on top (either cheapest node or its target)
+
+				- If the stack name flag is 'a'
+					- If the top node is above median (CN or TN is on the top half)
+						- Call ra() function
+					- Else
+						- Call to rra() function
+				- Else if stack name flag is 'b'
+					- If the top node is above median (CN or TN is on the top half)
+						- Call rb() function
+					- Else
+						- Call to rrb() function
+		
+		**END OF ITARATION OF STACK B TO PUSH NODES TO A**
+		Here both phases (update & push) ended.
+		We just need to reset the indexes on stack a and check if the smallest number is on top 
+		or not.
+
+		- Call to set_index() function with stack a
+		- Call to smallest_on_top() function with stack a.
+
+		- SMALLEST_ON_TOP (push_swap.c): static void	smallest_on_top(t_node **a);
+
+		This function is to check if the smallest node is on top and if not bring it to the top
+
+			- Iterate through stack a while the head of the stack is not equal to the smallest
+			node (call to find_smallest() functioon)
+
+				- If the smallest node is above the median
+					- Call to ra() function
+				- Else (is bellow median)
+					- Call to rra() function
 
